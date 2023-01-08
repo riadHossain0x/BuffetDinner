@@ -1,4 +1,4 @@
-﻿using BuffetDinner.Application.Services.Common.Interfaces.Authentication;
+﻿using BuffetDinner.Application.Common.Interfaces.Authentication;
 
 namespace BuffetDinner.Application.Services.Authentication;
 

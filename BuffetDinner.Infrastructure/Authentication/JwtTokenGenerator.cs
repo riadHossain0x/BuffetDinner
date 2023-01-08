@@ -1,4 +1,6 @@
-﻿using BuffetDinner.Application.Services.Common.Interfaces.Authentication;
+﻿using BuffetDinner.Application.Common.Interfaces.Authentication;
+using BuffetDinner.Application.Common.Interfaces.Services;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,10 +10,19 @@ namespace BuffetDinner.Infrastructure.Authentication;
 
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
+    private readonly JwtSettings _jwtSettings;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtOptions)
+    {
+        _dateTimeProvider = dateTimeProvider;
+        _jwtSettings = jwtOptions.Value;
+    }
+
     public string GenerateJwtToken(Guid userId, string firstName, string lastName)
     {
         var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super-secret-key")),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
             SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -23,11 +34,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         };
 
         var security = new JwtSecurityToken(
-            issuer: "BuffetDinner",
-            expires: DateTime.Now.AddDays(1),
+            issuer: _jwtSettings.Issuer,
+            expires: _dateTimeProvider.UtcNow.AddDays(_jwtSettings.ExpiryMinutes),
             claims: claims,
             signingCredentials: signingCredentials);
 
-
+        return new JwtSecurityTokenHandler().WriteToken(security);
     }
 }

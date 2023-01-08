@@ -1,4 +1,4 @@
-﻿namespace BuffetDinner.Application.Services.Common.Interfaces.Authentication;
+﻿namespace BuffetDinner.Application.Common.Interfaces.Authentication;
 
 public interface IJwtTokenGenerator
 {

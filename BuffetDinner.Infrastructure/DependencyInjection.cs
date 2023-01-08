@@ -1,17 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BuffetDinner.Application.Common.Interfaces.Authentication;
+using BuffetDinner.Infrastructure.Authentication;
+using BuffetDinner.Application.Common.Interfaces.Services;
+using BuffetDinner.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 
-namespace BuffetDinner.Infrastructure
+namespace BuffetDinner.Infrastructure;
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
-        {
-            return services;
-        }
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IDateTimeProvider, DatetimeProvider>();
+        return services;
     }
 }
